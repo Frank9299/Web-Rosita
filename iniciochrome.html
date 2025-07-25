@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>🌷 ROSITA 🌺</title>
+<style>
+  /* Reset y tamaño full */
+  html, body {
+    margin: 0; padding: 0; height: 100%; width: 100%;
+    overflow: auto; /* Permitir scroll si es necesario */
+    font-family: Arial, sans-serif;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: url('https://emojicursor.app/assets/img/fleurs/fleur-rose.png'), auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .top-buttons {
+    margin: 20px 0 10px;
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+  }
+
+  button, a.chatgpt-button {
+    padding: 10px 15px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+
+  button.config-button {
+    background-color: #90ee90;
+    color: black;
+  }
+  button.config-button:hover {
+    background-color: #7fdc7f;
+  }
+
+  a.chatgpt-button {
+    background-color: #0a84ff;
+    color: white;
+  }
+  a.chatgpt-button:hover {
+    background-color: #0066cc;
+  }
+
+  #fileInput {
+    display: none;
+  }
+
+  .search-container {
+    width: 100%;
+    max-width: 600px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .search-input {
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px 0 0 5px;
+    outline: none;
+  }
+
+  .search-button {
+    background-color: #4285F4;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+  }
+  .search-button:hover {
+    background-color: #3367D6;
+  }
+
+  .moving-text {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    white-space: nowrap;
+    font-size: 3em;
+    color: #FF69B4;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: moveText 25s linear infinite;
+    pointer-events: none;
+    user-select: none;
+    z-index: 1000;
+  }
+  @keyframes moveText {
+    0% { transform: translate(-10vw, -10vh); }
+    25% { transform: translate(110vw, 90vh); }
+    50% { transform: translate(-10vw, 110vh); }
+    75% { transform: translate(110vw, -10vh); }
+    100% { transform: translate(-10vw, 90vh); }
+  }
+
+  .poem-box {
+    position: static;
+    width: 8cm;
+    margin: 20px auto 40px;
+    background-color: rgba(255,255,255,0.85);
+    padding: 15px 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    font-size: 16px;
+    color: #333;
+    line-height: 1.5;
+    overflow: visible;
+    user-select: none;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+  <div class="top-buttons">
+    <button class="config-button" onclick="document.getElementById('fileInput').click()">Cambiar Fondo</button>
+    <a href="https://www.chatgpt.com" target="_blank" class="chatgpt-button">ChatGPT</a>
+    <input type="file" id="fileInput" accept="image/*" onchange="updateBackground(this)">
+  </div>
+
+  <div class="search-container">
+    <form action="https://www.google.com/search" method="get" style="display: flex; width: 100%;">
+      <input type="text" class="search-input" name="q" placeholder="Buscar con 🌹 la Rosit@" />
+      <button type="submit" class="search-button">🔍</button>
+    </form>
+  </div>
+
+  <div class="poem-box" id="poemBox"></div>
+
+  <div class="moving-text">❤️ ROSITA TE AMO ❤️</div>
+
+<script>
+  const poema = [
+    "🌸 Rosita, luz de mi mañana 💖",
+    "🌷 Rosita, dulce y temprana 💕",
+    "🌹 Rosita, brisa en el camino 💘",
+    "💗 Rosita, amor cristalino 💞",
+    "👸 Esposita, mi gran amor 💝",
+    "👑 Princesa de mi corazón 🌺",
+    "🌼 Rosita, flor de mi jardín 💐",
+    "🎶 Rosita, canto sin fin 🌈",
+    "🔥 Mi amor, fuego que no cesa 💓",
+    "🕊️ Rosita, paz y nobleza 🌻",
+    "😁 Rosita, risa que encanta 😊",
+    "🌟 Rosita, alma que levanta 💫",
+    "🌠 Princesa, sueño y esperanza 🌈",
+    "🤝 Rosita, dulce confianza 🤗",
+    "🔆 Rosita, luz que me guía 🌞",
+    "📜 Rosita, eterna poesía ✨",
+    "❤️ Mi gran amor, en mi corazón 💘",
+    "💍 Rosita, mi bendición 💖"
+  ];
+
+  let index = 0;
+  function showPoem() {
+    const lines = poema.slice(index, index + 5).join("<br>");
+    document.getElementById("poemBox").innerHTML = lines;
+    index = (index + 5) % poema.length;
+  }
+  showPoem();
+  setInterval(showPoem, 10000);
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedBackground = localStorage.getItem('backgroundImage');
+    if (savedBackground) {
+      document.body.style.backgroundImage = `url('${savedBackground}')`;
+    }
+  });
+
+  function updateBackground(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imageUrl = e.target.result;
+        document.body.style.backgroundImage = `url('${imageUrl}')`;
+        localStorage.setItem('backgroundImage', imageUrl);
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+</script>
+
+</body>
+</html>
