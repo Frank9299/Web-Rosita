@@ -5,10 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>🌷 ROSITA 🌺</title>
 <style>
-  /* Reset y tamaño full */
   html, body {
     margin: 0; padding: 0; height: 100%; width: 100%;
-    overflow: auto; /* Permitir scroll si es necesario */
+    overflow: auto;
     font-family: Arial, sans-serif;
     background-size: cover;
     background-position: center;
@@ -41,25 +40,11 @@
     text-decoration: none;
   }
 
-  button.config-button {
-    background-color: #90ee90;
-    color: black;
-  }
-  button.config-button:hover {
-    background-color: #7fdc7f;
-  }
-
-  a.chatgpt-button {
-    background-color: #0a84ff;
-    color: white;
-  }
-  a.chatgpt-button:hover {
-    background-color: #0066cc;
-  }
-
-  #fileInput {
-    display: none;
-  }
+  button.config-button { background-color: #90ee90; color: black; }
+  button.config-button:hover { background-color: #7fdc7f; }
+  a.chatgpt-button { background-color: #0a84ff; color: white; }
+  a.chatgpt-button:hover { background-color: #0066cc; }
+  #fileInput { display: none; }
 
   .search-container {
     width: 100%;
@@ -92,9 +77,7 @@
     font-size: 18px;
     transition: background-color 0.3s ease;
   }
-  .search-button:hover {
-    background-color: #3367D6;
-  }
+  .search-button:hover { background-color: #3367D6; }
 
   .moving-text {
     position: fixed;
@@ -132,26 +115,64 @@
     user-select: none;
     text-align: center;
   }
+
+  .love-battery {
+    position: fixed;
+    bottom: 60px;
+    right: 20px;
+    width: 160px;
+    height: 40px;
+    background-color: #eee;
+    border: 2px solid #555;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 5px;
+    box-shadow: 0 0 10px rgba(255, 0, 128, 0.6);
+    font-size: 14px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+    color: #ff1493;
+    z-index: 999;
+  }
+
+  .love-bar {
+    height: 20px;
+    background: linear-gradient(to right, #ff69b4, #ff1493);
+    border-radius: 5px;
+    transition: width 0.5s ease-in-out;
+  }
+
+  .battery-label {
+    margin-left: 10px;
+    white-space: nowrap;
+  }
 </style>
 </head>
 <body>
 
-  <div class="top-buttons">
-    <button class="config-button" onclick="document.getElementById('fileInput').click()">Cambiar Fondo</button>
-    <a href="https://www.chatgpt.com" target="_blank" class="chatgpt-button">ChatGPT</a>
-    <input type="file" id="fileInput" accept="image/*" onchange="updateBackground(this)">
-  </div>
+<div class="top-buttons">
+  <button class="config-button" onclick="document.getElementById('fileInput').click()">Cambiar Fondo</button>
+  <a href="https://www.chatgpt.com" target="_blank" class="chatgpt-button">ChatGPT</a>
+  <input type="file" id="fileInput" accept="image/*" onchange="updateBackground(this)">
+</div>
 
-  <div class="search-container">
-    <form action="https://www.google.com/search" method="get" style="display: flex; width: 100%;">
-      <input type="text" class="search-input" name="q" placeholder="Buscar con 🌹 la Rosit@" />
-      <button type="submit" class="search-button">🔍</button>
-    </form>
-  </div>
+<div class="search-container">
+  <form action="https://www.google.com/search" method="get" style="display: flex; width: 100%;" onsubmit="handleSearch()">
+    <input type="text" class="search-input" name="q" id="searchQuery" placeholder="Buscar con 🌹 la Rosit@" />
+    <button type="submit" class="search-button">🔍</button>
+  </form>
+</div>
 
-  <div class="poem-box" id="poemBox"></div>
+<div class="poem-box" id="poemBox"></div>
+<div class="moving-text">❤️ ROSITA TE AMO ❤️</div>
 
-  <div class="moving-text">❤️ ROSITA TE AMO ❤️</div>
+<!-- Batería de Amor -->
+<div class="love-battery">
+  <div id="loveBar" class="love-bar"></div>
+  <div class="battery-label" id="loveLabel">Cargando...</div>
+</div>
 
 <script>
   const poema = [
@@ -174,21 +195,38 @@
     "❤️ Mi gran amor, en mi corazón 💘",
     "💍 Rosita, mi bendición 💖"
   ];
-
   let index = 0;
+
   function showPoem() {
     const lines = poema.slice(index, index + 5).join("<br>");
-    document.getElementById("poemBox").innerHTML = lines;
+    const poemBox = document.getElementById("poemBox");
+    poemBox.innerHTML = lines;
+    poemBox.style.whiteSpace = "normal"; // asegurar visibilidad sin alterar diseño
     index = (index + 5) % poema.length;
   }
-  showPoem();
-  setInterval(showPoem, 10000);
+
+  // Pide permiso para notificaciones solo una vez
+  if ('Notification' in window) {
+    if (localStorage.getItem('notificationsPermission') !== 'granted' &&
+        localStorage.getItem('notificationsPermission') !== 'denied') {
+      Notification.requestPermission().then(permission => {
+        localStorage.setItem('notificationsPermission', permission);
+      });
+    }
+  }
 
   window.addEventListener('DOMContentLoaded', () => {
     const savedBackground = localStorage.getItem('backgroundImage');
     if (savedBackground) {
       document.body.style.backgroundImage = `url('${savedBackground}')`;
     }
+
+    const savedLove = localStorage.getItem('loveLevel');
+    loveLevel = savedLove ? parseInt(savedLove) : 50;
+    updateLoveBar(loveLevel);
+
+    showPoem();
+    setInterval(showPoem, 10000);
   });
 
   function updateBackground(input) {
@@ -202,6 +240,54 @@
       reader.readAsDataURL(input.files[0]);
     }
   }
+
+  // Lógica de batería de amor
+  let loveLevel = 50;
+  const loveWords = ['amor', 'felicidad', 'rosita', 'te quiero', 'cariño', 'corazón', 'beso', 'abrazo', 'alegría', 'paz', 'energía', 'optimismo', 'positivismo'];
+  const sadWords = ['odio', 'tristeza', 'muerte', 'problema', 'guerra', 'llanto', 'soledad', 'desprecio', 'despición', 'rencor', 'negativismo'];
+
+  function updateLoveBar(level) {
+    const bar = document.getElementById('loveBar');
+    const label = document.getElementById('loveLabel');
+    bar.style.width = level + '%';
+    label.textContent = level + '% Amor';
+    localStorage.setItem('loveLevel', level);
+
+    // Mostrar alertas con notificaciones o alert
+    if (level <= 20) {
+      showAlertMessage("PELIGRO EL AMOR QUE USTED SIENTE SE ESTÁ DESTRUYENDO.");
+    } else if (level >= 80) {
+      showAlertMessage("FELICITACIONES SU AMOR ES FUERTE Y GRANDE");
+    }
+  }
+
+  // Mostrar mensaje aunque el usuario esté en otra pestaña
+  function showAlertMessage(text) {
+    if (Notification.permission === "granted") {
+      new Notification(text);
+    } else {
+      alert(text);
+    }
+  }
+
+  function handleSearch() {
+    const query = document.getElementById('searchQuery').value.toLowerCase();
+    // Cambios suaves: 1 o 2 por ciento
+    const change = Math.floor(Math.random() * 2) + 1; // 1 o 2
+
+    if (loveWords.some(w => query.includes(w))) {
+      loveLevel = Math.min(100, loveLevel + change);
+    } else if (sadWords.some(w => query.includes(w))) {
+      loveLevel = Math.max(0, loveLevel - change);
+    }
+    updateLoveBar(loveLevel);
+  }
+
+  setInterval(() => {
+    let rand = Math.floor(Math.random() * 3) - 1; // -1, 0, o 1
+    loveLevel = Math.max(0, Math.min(100, loveLevel + rand));
+    updateLoveBar(loveLevel);
+  }, 15000);
 </script>
 
 </body>
